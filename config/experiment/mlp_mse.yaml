@@ -1,0 +1,7 @@
+# Example experiment with different hyperparameters
+
+expr_name: "gru_fast_test"
+batch_size: 512
+n_epochs: 50
+lr: 0.001
+seed: 42
