@@ -8,6 +8,7 @@ from torch import nn
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 
+from .eval_utils import calculate_portfolio_returns_sliding, get_metrics, wandb_recorder
 from .utils import EarlyStopping
 
 
@@ -66,6 +67,9 @@ class Trainer:
                     tr_feat, tr_label = tr_feat.to(self.device), tr_label.to(
                         self.device
                     )
+                    if tr_label.ndim == 3:
+                        tr_label = tr_label.squeeze(-1)
+
                     model_output = self.model(tr_feat)
                     tr_pred = (
                         model_output[0]
@@ -111,6 +115,8 @@ class Trainer:
                             val_feat.to(self.device),
                             val_label.to(self.device),
                         )
+                        if val_label.ndim == 3:
+                            val_label = val_label.squeeze(-1)
                         model_output = self.model(val_feat)
 
                         if isinstance(model_output, tuple):
@@ -131,7 +137,7 @@ class Trainer:
                             val_loss *= -1
 
                         epoch_val_loss += val_loss.item()
-                        full_val_pred.append(val_pred.cpu().numpy())
+                        full_val_pred.append(val_pred.unsqueeze(-1).unsqueeze(-1).cpu().numpy())
                         full_val_next_ret.append(
                             val_next_ret.cpu().numpy()
                             if val_next_ret is not None
@@ -199,7 +205,7 @@ class Trainer:
         eval_loader: DataLoader,
         inference_only: bool = False,
         test_dates: list = [],
-    ) -> None:
+    ) -> np.ndarray:
         if inference_only:
             self._load_model(f"model/{self.expr_name}/{self.model_path}")
 
@@ -233,7 +239,7 @@ class Trainer:
             sliding_rets = calculate_portfolio_returns_sliding(
                 full_test_pred,
                 full_test_next_ret,
-                k=k,
+                k=self.k,
                 prediction_windows=self.target,
             )
             average_metrics = pd.DataFrame(

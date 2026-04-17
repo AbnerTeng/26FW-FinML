@@ -1,6 +1,6 @@
 # Main training configuration
 # Data configuration
-data_path: "data/stock_data.pkl"
+data_path: "data/ni225_stock.pkl"
 date_column: "date"
 train_start: "2010-01-01"
 val_start: "2020-01-01"
@@ -8,27 +8,27 @@ test_start: "2021-01-01"
 test_end: "2022-01-01"
 
 # Feature engineering
-ma_windows: [5, 10, 20, 60]
+ma_windows: [5, 10, 20]
 target_range: 5
-add_daily_norm: true
+add_daily_norm: false
 
 # Model configuration
 model_name: "gru"
 seq_len: 20
-norm_index: -1
-norm_type: "standard"
+norm_index: 5
+norm_type: "std"
 
 # GRU model parameters
 model:
   gru:
-    input_dim: 6
+    input_dim: 8
     hidden_dim: 128
     num_layers: 2
     output_dim: 1
     dropout: 0.1
 
 # Training configuration
-batch_size: 128
+batch_size: 16
 n_epochs: 100
 lr: 0.001
 patience: 20

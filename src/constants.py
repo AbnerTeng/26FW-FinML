@@ -9,5 +9,4 @@ FEATURES = [
     "low",
     "close",
     "volume",
-    "ret",
 ]

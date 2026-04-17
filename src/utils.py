@@ -28,16 +28,20 @@ def load_data(filepath: str) -> Dict[str, pd.DataFrame]:
     return data
 
 
+def make_features(ma_windows: List[int], features: List[str]) -> None:
+    features += [f"trend_{w}" for w in ma_windows]
+
+
 def compute_trends(df: pd.DataFrame, windows: List[int]) -> pd.DataFrame:
     for w in windows:
-        rolling_mean = pd.DataFrame(df["close"].rolling(window=w).mean())
+        rolling_mean = df["close"].rolling(window=w).mean()
         df[f"trend_{w}"] = rolling_mean.div(df["close"]) - 1
 
     return df
 
 
 def compute_cumret(df: pd.DataFrame, target_range: int) -> pd.DataFrame:
-    rolling_sum = pd.DataFrame(df["ret"].rolling(window=target_range).sum())
+    rolling_sum = df["ret"].rolling(window=target_range).sum()
     label = rolling_sum.shift(-target_range).fillna(0)
     mask = label.abs() > 0.5
     mean_label = label[~mask].mean()
@@ -113,7 +117,8 @@ def preprocess(
                         stock_data_copy = compute_daily_norm(stock_data_copy)
 
                     masks = {
-                        "train": stock_data_copy[date_column] < val_start,
+                        "train": (stock_data_copy[date_column] >= pd.Timestamp(train_start))
+                        & (stock_data_copy[date_column] < val_start),
                         "valid": (stock_data_copy[date_column] >= val_start)
                         & (stock_data_copy[date_column] < test_start),
                         "test": stock_data_copy[date_column] >= test_start,

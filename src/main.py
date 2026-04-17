@@ -13,7 +13,7 @@ from .datasets import TSDataset
 from .models import model_mapper
 from .models.loss import PairMSELoss, SpearmanCorr
 from .trainer import Trainer
-from .utils import get_array, load_data, preprocess, rolling_norm_sequence, seed_all
+from .utils import get_array, load_data, make_features, preprocess, rolling_norm_sequence, seed_all
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +46,8 @@ def main(cfg: DictConfig) -> None:
         len(train) == len(valid) == len(test)
     ), "Train, valid, and test sets must have the same number of stocks."
     test_dates = test[list(test.keys())[0]][cfg.date_column].values.tolist()
-    used_features = FEATURES
+    used_features = FEATURES.copy()
+    make_features(cfg.ma_windows, used_features)
 
     train_feat, train_label = get_array(train, used_features, TARGET, False)
     valid_feat, valid_label, valid_next_ret = get_array(
