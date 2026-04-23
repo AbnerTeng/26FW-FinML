@@ -1,4 +1,7 @@
 outputs/
+notebooks/efficiency_decay.pdf
+notebooks/features.pdf
+notebooks/for_slide.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

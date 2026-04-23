@@ -24,7 +24,6 @@ python -m src.main --multirun seed=1,2,3,4,5
 ### Configuration Structure
 
 - `config/config.yaml` - Main configuration (GRU + MSE by default)
-- `config/model/base.yaml` - GRU model architecture
 - `config/experiment/` - Example experiment configs
 
 ### Key Examples
@@ -39,8 +38,6 @@ python -m src.main model.gru.hidden_dim=256 model.gru.num_layers=3
 # Enable Wandb logging
 python -m src.main wandb=true expr_name=my_experiment
 ```
-
-For detailed documentation, see [HYDRA_GUIDE.md](HYDRA_GUIDE.md).
 
 ### Extending the Configuration
 
